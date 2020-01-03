@@ -84,10 +84,28 @@ class blockchain:
         return True
 
 
-a = blockchain()
-for _ in range(10):
-    a.add_block(int(a.p_o_w(a.chain[-1]["nonce"])), a.chain[-1]["hash"])
-for i in range(len(a.chain)):
-    print(a.chain[i])
-    print("\n")
-print(a.is_valid())
+# Creating a flask web app
+
+app = Flask(__name__)
+
+# Creating the blockchain instance
+
+demo_chain = blockchain()
+
+print(demo_chain.chain[-1])
+
+# Route to mine a block
+
+@app.route("/mine", methods = ["GET"])
+def mine_block():
+    # Getting the last block in chain
+    prev_block = demo_chain.chain[-1]
+    # Calculating the nonce for new block
+    nonce = demo_chain.p_o_w(prev_block["nonce"])
+    # Adding the new block to the chain
+    demo_chain.add_block(nonce, prev_block["hash"])
+    # Dictionary to display message to the miner
+    message = demo_chain.chain[-1]
+    message["message"] = "You have successfully mined and appended a block"
+    return jsonify(message)
+    
