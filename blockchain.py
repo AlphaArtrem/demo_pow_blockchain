@@ -85,17 +85,12 @@ class blockchain:
 
 
 # Creating a flask web app
-
 app = Flask(__name__)
 
 # Creating the blockchain instance
-
 demo_chain = blockchain()
 
-print(demo_chain.chain[-1])
-
 # Route to mine a block
-
 @app.route("/mine", methods = ["GET"])
 def mine_block():
     # Getting the last block in chain
@@ -107,5 +102,16 @@ def mine_block():
     # Dictionary to display message to the miner
     message = demo_chain.chain[-1]
     message["message"] = "You have successfully mined and appended a block"
+    # Returning the mined block and message
     return jsonify(message)
-    
+
+# Route to get the complete chain
+@app.route("/chain", methods = ["GET"])
+def get_chain():
+    # Dictionary to display message    
+    message = {}
+    message["chain"] = demo_chain.chain
+    # Adding the lenght of chain
+    message["length"] = len(demo_chain.chain)
+    # Returnng the chain and its length
+    return jsonify(message)    
