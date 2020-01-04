@@ -115,3 +115,15 @@ def get_chain():
     message["length"] = len(demo_chain.chain)
     # Returnng the chain and its length
     return jsonify(message)    
+
+# Route to check validity of the blockchain
+@app.route("/valid", methods = ["GET"])
+def is_valid():
+    # Checking if the chain is valid
+    validity = demo_chain.is_valid()
+    # Consider chain invalid
+    message = "Chain is invalid"
+    # If valid change the message accordingly
+    if validity:
+        message = "Chain is valid"
+    return jsonify(message)
