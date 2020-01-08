@@ -13,22 +13,20 @@ class blockchain:
         # Variable to keep track of difficulty
         self.diff = 4
         # Adding genesis (#1) block
-        self.add_block(nonce = 1, prev_hash = "0")
+        self.add_block(prev_hash = "0")
+        self.chain[0]["nonce"] = 1
         ## Creating hash of genesis block
         self.chain[0]["hash"] = self.block_hash(self.chain[0])
     
     # Function to add new block
-    def add_block(self, nonce, prev_hash):
+    def add_block(self, prev_hash):
         # Creating a dict containg values to be appended to the chain
         block = {
             "index" : len(self.chain) + 1,
-            "nonce" : nonce,
             "prev_hash" : prev_hash,
             "timestamp" : str(datetime.datetime.now()),
             "diff" : self.diff
         }
-        ## Creating hash of current block
-        block["hash"] = self.block_hash(block)
         # Increasing difficulty after certian block height is reached
         # Adding one to chain length because it starts with 0
         if (len(self.chain ) + 1) % 1000 == 0:
@@ -36,8 +34,11 @@ class blockchain:
         # Appending the new block
         self.chain.append(block)
     
+    def add_nonce(self, nonce):
+        self.chain[-1]["nonce"] = nonce    
+    
     # Function to find nonce for new block
-    def p_o_w(self, prev_nonce):
+    def p_o_w(self, prev_nonce, current_block):
         # Variable to store nonce
         nonce = 1
         # Variable to store the required number of 0s for nonce
@@ -47,7 +48,7 @@ class blockchain:
             nonce_start = nonce_start + "0"
         # Loop to find the nonce whose hash has required number of starting 0s
         while True:
-            hash = hashlib.sha256(str(nonce**2 - prev_nonce**2).encode()).hexdigest()
+            hash = hashlib.sha256((str(nonce**2 - prev_nonce**2) + str(current_block["index"]) + str(current_block["prev_hash"]) + str(current_block["timestamp"]) + str(current_block["diff"])).encode()).hexdigest()
             # Checking if hash start has desired number of 0s
             if hash[0:self.diff] == nonce_start:
                 return nonce
@@ -95,10 +96,11 @@ demo_chain = blockchain()
 def mine_block():
     # Getting the last block in chain
     prev_block = demo_chain.chain[-1]
-    # Calculating the nonce for new block
-    nonce = demo_chain.p_o_w(prev_block["nonce"])
     # Adding the new block to the chain
-    demo_chain.add_block(nonce, prev_block["hash"])
+    demo_chain.add_block(prev_block["hash"])
+    # Calculating the nonce for new block
+    nonce = demo_chain.p_o_w(prev_block["nonce"], demo_chain.chain[-1])
+    demo_chain.add_nonce(nonce)
     # Dictionary to display message to the miner
     message = demo_chain.chain[-1]
     message["message"] = "You have successfully mined and appended a block"
