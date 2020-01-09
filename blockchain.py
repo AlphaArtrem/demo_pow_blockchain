@@ -14,9 +14,11 @@ class blockchain:
         self.diff = 4
         # Adding genesis (#1) block
         self.add_block(prev_hash = "0")
+        # Adding nonce fot gensis block
         self.chain[0]["nonce"] = 1
         ## Creating hash of genesis block
-        self.chain[0]["hash"] = self.block_hash(self.chain[0])
+        hash = hashlib.sha256(("1" + str(self.chain[0]["index"]) + str(self.chain[0]["prev_hash"]) + str(self.chain[0]["timestamp"]) + str(self.chain[0]["diff"])).encode()).hexdigest()
+        self.add_hash(hash)
     
     # Function to add new block
     def add_block(self, prev_hash):
@@ -32,10 +34,7 @@ class blockchain:
         if (len(self.chain ) + 1) % 1000 == 0:
             self.diff = self.diff + 1
         # Appending the new block
-        self.chain.append(block)
-    
-    def add_nonce(self, nonce):
-        self.chain[-1]["nonce"] = nonce    
+        self.chain.append(block)  
     
     # Function to find nonce for new block
     def p_o_w(self, prev_nonce, current_block):
@@ -51,18 +50,18 @@ class blockchain:
             hash = hashlib.sha256((str(nonce**2 - prev_nonce**2) + str(current_block["index"]) + str(current_block["prev_hash"]) + str(current_block["timestamp"]) + str(current_block["diff"])).encode()).hexdigest()
             # Checking if hash start has desired number of 0s
             if hash[0:self.diff] == nonce_start:
-                return nonce
+                return nonce, hash
             else:
                 nonce = nonce + 1   
+
+     # Function to add nonce to the block
+    def add_nonce(self, nonce):
+        self.chain[-1]["nonce"] = nonce  
     
-    # Function to calculate hash of block in json format
-    def block_hash(self, block):
-        # Converting the block from dictionary to json format
-        # sort_keys = True , so that values of block are sorted using keys of dictionary
-        en_block = json.dumps(block, sort_keys = True).encode()
-        # Taking hash of encoded block and returning it
-        hash = hashlib.sha256(en_block).hexdigest()
-        return hash
+    # Function to add hash of block
+    def add_hash(self, hash):
+        # Addng hash
+        self.chain[-1]["hash"] = hash
     
     # Function to check if chain is valid    
     def is_valid(self):
@@ -78,7 +77,7 @@ class blockchain:
             for _ in range(diff):
                 start = start + "0"
             # Calculating hash for nonce of current block
-            hash = hashlib.sha256(str(int(self.chain[i + 1]["nonce"])**2 - int(self.chain[i]["nonce"])**2).encode()).hexdigest()
+            hash = hashlib.sha256((str(int(self.chain[i + 1]["nonce"])**2 - int(self.chain[i]["nonce"])**2) + str(self.chain[i + 1]["index"]) + str(self.chain[i + 1]["prev_hash"]) + str(self.chain[i + 1]["timestamp"]) + str(self.chain[i + 1]["diff"])).encode()).hexdigest()
             # Checking if hash start has desired number of 0s
             if hash[0:diff] != start:
                 return False
@@ -99,8 +98,10 @@ def mine_block():
     # Adding the new block to the chain
     demo_chain.add_block(prev_block["hash"])
     # Calculating the nonce for new block
-    nonce = demo_chain.p_o_w(prev_block["nonce"], demo_chain.chain[-1])
+    nonce, hash = demo_chain.p_o_w(prev_block["nonce"], demo_chain.chain[-1])
+    # Adding nonce for new block
     demo_chain.add_nonce(nonce)
+    demo_chain.add_hash(hash)
     # Dictionary to display message to the miner
     message = demo_chain.chain[-1]
     message["message"] = "You have successfully mined and appended a block"
