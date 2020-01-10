@@ -12,23 +12,36 @@ class blockchain:
         self.chain = []
         # Variable to keep track of difficulty
         self.diff = 4
-        # Adding genesis (#1) block
-        self.add_block(prev_hash = "0")
-        # Adding nonce fot gensis block
-        self.chain[0]["nonce"] = 1
-        ## Creating hash of genesis block
-        hash = hashlib.sha256(("1" + str(self.chain[0]["index"]) + str(self.chain[0]["prev_hash"]) + str(self.chain[0]["timestamp"]) + str(self.chain[0]["diff"])).encode()).hexdigest()
-        self.add_hash(hash)
+        # Vlaues for genesis (#1) block
+        block = {
+            "index" : len(self.chain) + 1,
+            "prev_hash" : 0,
+            "diff" : self.diff,
+            "timestamp" : str(datetime.datetime.now()),
+            "nonce" : 1,
+        }
+        # Getting hash
+        block["hash"] = hashlib.sha256(("1" + str(block["index"]) + str(block["prev_hash"]) + str(block["timestamp"]) + str(block["diff"])).encode()).hexdigest()
+        # Adding genesis block
+        self.chain.append(block)
     
-    # Function to add new block
-    def add_block(self, prev_hash):
-        # Creating a dict containg values to be appended to the chain
+    # Function to create new block
+    def new_block(self, prev_hash):
+        # Creating a dict containing values for new block
         block = {
             "index" : len(self.chain) + 1,
             "prev_hash" : prev_hash,
-            "timestamp" : str(datetime.datetime.now()),
             "diff" : self.diff
         }
+        # Returning block
+        return block
+
+    # Function to add new block
+    def add_block(self, block, timestamp, nonce, hash):
+        # Creating a dict containg values to be appended to the chain
+        block["timestamp"] = timestamp
+        block["nonce"] = nonce
+        block["hash"] = hash
         # Increasing difficulty after certian block height is reached
         # Adding one to chain length because it starts with 0
         if (len(self.chain ) + 1) % 1000 == 0:
@@ -47,21 +60,13 @@ class blockchain:
             nonce_start = nonce_start + "0"
         # Loop to find the nonce whose hash has required number of starting 0s
         while True:
-            hash = hashlib.sha256((str(nonce**2 - prev_nonce**2) + str(current_block["index"]) + str(current_block["prev_hash"]) + str(current_block["timestamp"]) + str(current_block["diff"])).encode()).hexdigest()
+            timestamp = str(datetime.datetime.now())
+            hash = hashlib.sha256((str(nonce**2 - prev_nonce**2) + str(current_block["index"]) + str(current_block["prev_hash"]) + timestamp + str(current_block["diff"])).encode()).hexdigest()
             # Checking if hash start has desired number of 0s
             if hash[0:self.diff] == nonce_start:
-                return nonce, hash
+                return timestamp, nonce, hash
             else:
                 nonce = nonce + 1   
-
-     # Function to add nonce to the block
-    def add_nonce(self, nonce):
-        self.chain[-1]["nonce"] = nonce  
-    
-    # Function to add hash of block
-    def add_hash(self, hash):
-        # Addng hash
-        self.chain[-1]["hash"] = hash
     
     # Function to check if chain is valid    
     def is_valid(self):
@@ -95,13 +100,12 @@ demo_chain = blockchain()
 def mine_block():
     # Getting the last block in chain
     prev_block = demo_chain.chain[-1]
-    # Adding the new block to the chain
-    demo_chain.add_block(prev_block["hash"])
-    # Calculating the nonce for new block
-    nonce, hash = demo_chain.p_o_w(prev_block["nonce"], demo_chain.chain[-1])
-    # Adding nonce for new block
-    demo_chain.add_nonce(nonce)
-    demo_chain.add_hash(hash)
+    # Getting the new block for the chain
+    block = demo_chain.new_block(prev_block["hash"])
+    # Calculating the nonce for new block and getting timestamp and hash once nonce is found
+    timestamp, nonce, hash = demo_chain.p_o_w(prev_block["nonce"], block)
+    # Adding the new block
+    demo_chain.add_block(block, timestamp, nonce, hash)
     # Dictionary to display message to the miner
     message = demo_chain.chain[-1]
     message["message"] = "You have successfully mined and appended a block"
