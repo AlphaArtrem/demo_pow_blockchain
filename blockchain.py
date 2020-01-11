@@ -1,7 +1,7 @@
 import json
 import hashlib
 import datetime
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 
 # Class containing code for basic blockchain functionality
 class blockchain:
@@ -110,7 +110,7 @@ def mine_block():
     message = demo_chain.chain[-1]
     message["message"] = "You have successfully mined and appended a block"
     # Returning the mined block and message
-    return jsonify(message)
+    return render_template("mine.html", message = message)
 
 # Route to get the complete chain
 @app.route("/chain", methods = ["GET"])

@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block title %}Mined Block{% endblock %}
+{% block body %}
+<div style="margin: 15% 10% 10% 10%;">
+    <table class="table table-striped table-dark" style="word-wrap: break-word;">
+        <thead>
+            <tr>
+                <th scope="col" style="text-align: center;" colspan="2">Mined Block</th>
+            </tr>
+            <tr>
+                <th scope="col">Field</th>
+                <th scope="col">Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">Index</th>
+                <td>{{message.index}}</td>
+            </tr>
+            <tr>
+                <th scope="row">Previous Hash</th>
+                <td>{{message.prev_hash}}</td>
+            </tr>
+            <tr>
+                <th scope="row">Timestamp</th>
+                <td>{{message.timestamp}}</td>
+            </tr>
+            <tr>
+                <th scope="row">Difficulty</th>
+                <td>{{message.diff}}</td>
+            </tr>
+            <tr>
+                <th scope="row">Nonce</th>
+                <td>{{message.nonce}}</td>
+            </tr>
+            <tr>
+                <th scope="row">Hash</th>
+                <td>{{message.hash}}</td>
+            </tr>
+            <tr>
+                <th scope="col" style="text-align: center;" colspan="2">{{message.message}}</th>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
