@@ -121,7 +121,7 @@ def get_chain():
     # Adding the lenght of chain
     message["length"] = len(demo_chain.chain)
     # Returnng the chain and its length
-    return jsonify(message)    
+    return render_template("chain.html", message = message)  
 
 # Route to check validity of the blockchain
 @app.route("/valid", methods = ["GET"])
