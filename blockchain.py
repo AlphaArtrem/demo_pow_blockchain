@@ -128,9 +128,7 @@ def get_chain():
 def is_valid():
     # Checking if the chain is valid
     validity = demo_chain.is_valid()
-    # Consider chain invalid
-    message = "Chain is invalid"
-    # If valid change the message accordingly
-    if validity:
-        message = "Chain is valid"
-    return jsonify(message)
+    # Storing time of checking validity
+    timestamp = datetime.datetime.now()
+    # Renderong the message page
+    return render_template("valid.html", valid = validity, timestamp = timestamp)

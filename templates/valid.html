@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block title %}Validity{% endblock %}
+{% block body %}
+<div class="card text-center" style="margin: 15% 10% 10%;">
+  <div class="card-header">
+    Result
+  </div>
+  <div class="card-body">
+    {% if valid %}
+    <h5 class="card-title">The Chain Is Valid</h5>
+    <p class="card-text">All the blocks link to each other and hashes have required zeroes</p>
+    <a href="/chain" class="btn btn-success">Check Chain</a>
+    {% endif %}
+    {% if not valid %}
+    <h5 class="card-title">The Chain Is Invalid</h5>
+    <p class="card-text">There are problems in the chain</p>
+    <a href="/chain" class="btn btn-danger">Check Chain</a>
+    {% endif %}
+  </div>
+  <div class="card-footer text-muted">
+    {{timestamp}}
+  </div>
+</div>
+{% endblock %}
