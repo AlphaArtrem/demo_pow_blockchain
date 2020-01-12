@@ -1,7 +1,7 @@
 import json
 import hashlib
 import datetime
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, redirect
 
 # Class containing code for basic blockchain functionality
 class blockchain:
@@ -95,6 +95,11 @@ app = Flask(__name__)
 # Creating the blockchain instance
 demo_chain = blockchain()
 
+# Default route
+@app.route("/")
+def default():
+    return redirect("/chain")
+
 # Route to mine a block
 @app.route("/mine", methods = ["GET"])
 def mine_block():
@@ -132,3 +137,8 @@ def is_valid():
     timestamp = datetime.datetime.now()
     # Renderong the message page
     return render_template("valid.html", valid = validity, timestamp = timestamp)
+
+# When route deosn't exist
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html', timestamp = datetime.datetime.now()), 404

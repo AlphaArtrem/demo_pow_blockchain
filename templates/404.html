@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block title %}Error{% endblock %}
+{% block body %}
+<div class="card text-center" style="margin: 15% 10% 10%;">
+    <div class="card-header">
+      Error
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">404!</h5>
+      <p class="card-text">Page not found</p>
+      <a href="/chain" class="btn btn-primary">Home</a>
+    </div>
+    <div class="card-footer text-muted">
+      {{timestamp}}
+    </div>
+  </div>
+{% endblock %}
