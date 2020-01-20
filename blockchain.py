@@ -2,6 +2,9 @@ import json
 import hashlib
 import datetime
 from flask import Flask, jsonify, render_template, redirect
+import requests
+from uuid import uuid4
+from urllib.parse import urlparse
 
 # Class containing code for basic blockchain functionality
 class blockchain:
@@ -93,7 +96,7 @@ class blockchain:
 app = Flask(__name__)
 
 # Creating the blockchain instance
-demo_chain = blockchain()
+ychain = blockchain()
 
 # Default route
 @app.route("/")
@@ -104,15 +107,15 @@ def default():
 @app.route("/mine", methods = ["GET"])
 def mine_block():
     # Getting the last block in chain
-    prev_block = demo_chain.chain[-1]
+    prev_block = ychain.chain[-1]
     # Getting the new block for the chain
-    block = demo_chain.new_block(prev_block["hash"])
+    block = ychain.new_block(prev_block["hash"])
     # Calculating the nonce for new block and getting timestamp and hash once nonce is found
-    timestamp, nonce, hash = demo_chain.p_o_w(prev_block["nonce"], block)
+    timestamp, nonce, hash = ychain.p_o_w(prev_block["nonce"], block)
     # Adding the new block
-    demo_chain.add_block(block, timestamp, nonce, hash)
+    ychain.add_block(block, timestamp, nonce, hash)
     # Dictionary to display message to the miner
-    message = demo_chain.chain[-1]
+    message = ychain.chain[-1]
     message["message"] = "You have successfully mined and appended a block"
     # Returning the mined block and message
     return render_template("mine.html", message = message)
@@ -122,9 +125,9 @@ def mine_block():
 def get_chain():
     # Dictionary to display message    
     message = {}
-    message["chain"] = demo_chain.chain
+    message["chain"] = ychain.chain
     # Adding the lenght of chain
-    message["length"] = len(demo_chain.chain)
+    message["length"] = len(ychain.chain)
     # Returnng the chain and its length
     return render_template("chain.html", message = message)  
 
@@ -132,7 +135,7 @@ def get_chain():
 @app.route("/valid", methods = ["GET"])
 def is_valid():
     # Checking if the chain is valid
-    validity = demo_chain.is_valid()
+    validity = ychain.is_valid()
     # Storing time of checking validity
     timestamp = datetime.datetime.now()
     # Renderong the message page
