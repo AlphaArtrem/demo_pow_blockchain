@@ -13,15 +13,18 @@ class blockchain:
     def __init__(self):
         # Creating an empty chain to store blocks
         self.chain = []
+        # Creating an empty list to check store transaction before adding them to the block
+        self.txns = []
         # Variable to keep track of difficulty
         self.diff = 4
-        # Vlaues for genesis (#1) block
+        # Values for genesis (#1) block
         block = {
             "index" : len(self.chain) + 1,
             "prev_hash" : 0,
             "diff" : self.diff,
             "timestamp" : str(datetime.datetime.now()),
             "nonce" : 1,
+            "transactions" : self.txns
         }
         # Getting hash
         block["hash"] = hashlib.sha256(("1" + str(block["index"]) + str(block["prev_hash"]) + str(block["timestamp"]) + str(block["diff"])).encode()).hexdigest()
@@ -34,8 +37,11 @@ class blockchain:
         block = {
             "index" : len(self.chain) + 1,
             "prev_hash" : prev_hash,
-            "diff" : self.diff
+            "diff" : self.diff,
+            "transaction" : self.txns
         }
+        # Emptying list of transactions
+        self.txns = [] 
         # Returning block
         return block
 
@@ -90,6 +96,18 @@ class blockchain:
             if hash[0:diff] != start:
                 return False
         return True
+    
+    # Function to add new transaction to the block
+    def add_txns(self, sender, receiver, amount):
+        # Appending to list of transaction to be added to the block
+        self.txns.append({
+            "sender" : sender,
+            "receiver" : receiver,
+            "amount" : amount
+        })
+        # Returning the new block index
+        return len(self.chain) + 1
+    
 
 
 # Creating a flask web app
